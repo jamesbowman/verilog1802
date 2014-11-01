@@ -120,27 +120,27 @@ module cdp1802 (
     endcase
 
   wire [8:0] carry = (I[3]) ? 9'd0 : {8'd0, DF};      // 0 or 1 for ADC
-  wire [8:0] borrow = (I[3]) ? 9'd0 : ~{9{DF}};       // 0 or -1 for SDB and SMB
+  wire [8:0] borrow = (I[3]) ? 9'd0 : ~{9{DF}};       // -1 or 0 for SDB and SMB
   reg [8:0] DFD_n;
   always @*
     casez ({I, N})
-    /* LDXA */ {8'h72},
-    /* LDX  */ {8'hf0},
-    /* LDI  */ {8'hf8},
-    /* LDA  */ {8'h4?},
-    /* LDN  */ {4'h0, 4'b????}:  DFD_n = {DF, ram_q};
-    /* GLO  */ {4'h8, 4'b????}:  DFD_n = {DF, Rrd[7:0]};
-    /* GHI  */ {4'h9, 4'b????}:  DFD_n = {DF, Rrd[15:8]};
-    /* INP  */ {4'h6, 4'b1???}:  DFD_n = {DF, bus_in};
-    /* OR   */ {8'b1111?001}:    DFD_n = {DF, D | ram_q};
-    /* AND  */ {8'b1111?010}:    DFD_n = {DF, D & ram_q};
-    /* XOR  */ {8'b1111?011}:    DFD_n = {DF, D ^ ram_q};
-    /* ADD  */ {8'b?111?100}:    DFD_n = {1'b0, D} + {1'b0, ram_q} + carry;
-    /* SD   */ {8'b?111?101}:    DFD_n = ({1'b1, ram_q} - {1'b0, D}) + borrow;
-    /* SM   */ {8'b?111?111}:    DFD_n = ({1'b1, D} - {1'b0, ram_q}) + borrow;
-    /* SHR  */ {8'b?1110110}:    DFD_n = {D[0], carry[0], D[7:1]};
-    /* SHL  */ {8'b?1111110}:    DFD_n = {D, carry[0]};
-    default:                     DFD_n = {DF, D};
+    /* LDXA */ 8'h72,
+    /* LDX  */ 8'hf0,
+    /* LDI  */ 8'hf8,
+    /* LDA  */ 8'h4?,
+    /* LDN  */ 8'h0?:               DFD_n = {DF, ram_q};
+    /* GLO  */ 8'h8?:               DFD_n = {DF, Rrd[7:0]};
+    /* GHI  */ 8'h9?:               DFD_n = {DF, Rrd[15:8]};
+    /* INP  */ 8'b0110_1???:        DFD_n = {DF, bus_in};
+    /* OR   */ 8'b1111_?001:        DFD_n = {DF, D | ram_q};
+    /* AND  */ 8'b1111_?010:        DFD_n = {DF, D & ram_q};
+    /* XOR  */ 8'b1111_?011:        DFD_n = {DF, D ^ ram_q};
+    /* ADD  */ 8'b?111_?100:        DFD_n = {1'b0, D} + {1'b0, ram_q} + carry;
+    /* SD   */ 8'b?111_?101:        DFD_n = ({1'b1, ram_q} - {1'b0, D}) + borrow;
+    /* SM   */ 8'b?111_?111:        DFD_n = ({1'b1, D} - {1'b0, ram_q}) + borrow;
+    /* SHR  */ 8'b?111_0110:        DFD_n = {D[0], carry[0], D[7:1]};
+    /* SHL  */ 8'b?111_1110:        DFD_n = {D, carry[0]};
+    default:                        DFD_n = {DF, D};
     endcase
 
   assign n = ((I == 4'h6) &
