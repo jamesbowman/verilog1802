@@ -1,5 +1,4 @@
 `default_nettype none
-
 /* verilator lint_off UNOPTFLAT */
 
 module cdp1802 (
@@ -47,7 +46,7 @@ module cdp1802 (
   reg DF;                         // data flag (ALU carry)
   reg [7:0] B;                    // used for hi-byte of long branch
   reg [7:0] ram_q_;               // registered copy of ram_q, for multi-cycle ops
-  wire [3:0] I, N;
+  wire [3:0] I, N;                // the current instruction
 
   // ---------- RAM hookups ------------------------------
   assign ram_d = (I == 4'h6) ? io_din : D;
@@ -69,7 +68,7 @@ module cdp1802 (
   // ---------- fetch/execute ----------------------------
   always @*
     case (state)
-    FETCH:   state_n = EXECUTE;
+    FETCH:      state_n = EXECUTE;
     EXECUTE:
       case (I)
       4'h3:     state_n = take ? BRANCH3 : FETCH;
@@ -86,8 +85,7 @@ module cdp1802 (
   wire [3:0] X_n = ((I == 4'hE)) ? N : X;           // SEX
   wire Q_n = (({I, N} == 8'h7a) | ({I, N} == 8'h7b)) ? N[0] : Q; // REQ, SEQ
 
-  // reg. read address, memory access
-  reg [5:0] action;
+  reg [5:0] action;                 // reg. address; RAM rd; RAM wr
   assign {Ra, ram_rd, ram_wr} = action;
 
   localparam MEM___  = 2'b00;       // no memory access
@@ -173,4 +171,5 @@ module cdp1802 (
       if (state == BRANCH2)
         B <= ram_q;
     end
+
 endmodule
