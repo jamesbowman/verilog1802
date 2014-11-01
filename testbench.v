@@ -3,6 +3,7 @@
 module testbench (
   input clock,
   output [7:0] cc,
+  output bad,
   input [7:0] bus_in,
   output [7:0] bus_out,
   output [2:0] n
@@ -42,7 +43,9 @@ module testbench (
     .ram_a(ram_a),
 
     .bus_in(bus_in),
-    .bus_out(bus_out)
+    .bus_out(bus_out),
+
+    .bad(bad)
     );
 
 endmodule

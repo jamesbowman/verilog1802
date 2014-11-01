@@ -21,7 +21,10 @@ int main(int argc, char **argv)
     int i;
     for (i = 0; i < 32768; i++) {
       unsigned int v;
-      fscanf(hex, "%x\n", &v);
+      if (fscanf(hex, "%x\n", &v) != 1) {
+        fprintf(stderr, "invalid hex value at line %d\n", i + 1);
+        exit(1);
+      }
       top->v__DOT___ram__DOT__store[i] = v;
     }
 
@@ -34,7 +37,8 @@ int main(int argc, char **argv)
 
     FILE *log = fopen("log", "w");
     int t = 0;
-    for (i = 0; i < 534563551; i++) {
+    // for (i = 0; /*i < 534563551 */; i++) {
+    while (!top->bad) {
       top->clock = 1;
       top->eval();
       // tfp->dump(t);

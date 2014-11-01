@@ -11,6 +11,8 @@ module cdp1802 (
   output     [2:0]    n,
   output     [7:0]    bus_out,
 
+  output              bad,
+
   output              ram_rd,     // read enable
   output              ram_wr,     // write enable
   output     [15:0]   ram_a,      // RAM address
@@ -144,6 +146,7 @@ module cdp1802 (
   assign n = ((I == 4'h6) &
               (N[3] ? (state == EXECUTE) : (state == EXECUTE2))) ? N[2:0] : 3'b000;
   assign bus_out = ram_q;
+  assign bad = {I, N} == 8'h70;
 
   // ---------- cycle commit -----------------------------
   always @(negedge resetq or posedge clock)
