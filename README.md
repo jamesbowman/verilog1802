@@ -1,11 +1,14 @@
 verilog1802
 ===========
 
-The RCA 1802 in Verilog
+The RCA 1802 in Verilog.
 
-If you have Verilator installed on your system then you should be able to run the 
+If you have
+[Verilator](http://www.veripool.org/wiki/verilator)
+installed then you should be able to build the simulator,
+and even run
 [CamelForth 1802](http://www.camelforth.com/page.php?9)
-system interactively:
+interactively:
 
     $ make
     ...
