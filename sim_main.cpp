@@ -13,20 +13,27 @@ int main(int argc, char **argv)
     // tfp->open ("simx.vcd");
 
     if (argc != 2) {
-      fprintf(stderr, "usage: sim <input-file>\n");
-      exit(1);
-    }
-    FILE *input = fopen(argv[1], "r");
-    if (!input) {
-      perror(argv[1]);
+      fprintf(stderr, "usage: sim <hex-file>\n");
       exit(1);
     }
 
+    FILE *hex = fopen(argv[1], "r");
+    int i;
+    for (i = 0; i < 32768; i++) {
+      unsigned int v;
+      fscanf(hex, "%x\n", &v);
+      top->v__DOT___ram__DOT__store[i] = v;
+    }
+
+    // FILE *input = fopen(argv[1], "r");
+    // if (!input) {
+    //   perror(argv[1]);
+    //   exit(1);
+    // }
     // top->bus_in = getc(input);
 
     FILE *log = fopen("log", "w");
     int t = 0;
-    int i;
     for (i = 0; i < 534563551; i++) {
       top->clock = 1;
       top->eval();
@@ -38,13 +45,11 @@ int main(int argc, char **argv)
       // tfp->dump(t);
       t += 20;
       if (top->n & 1) {
-        // fprintf(stderr, "%d emit %c\n", i, top->bus_out);
         putchar(top->bus_out);
         putc(top->bus_out, log);
       }
       if (top->n & 2) {
-        top->bus_in = getc(input);
-        // fprintf(stderr, "%d bump to %x\n", i, top->bus_in);
+        top->bus_in = getchar();
       }
     }
     delete top;
