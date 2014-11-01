@@ -102,6 +102,8 @@ module cdp1802 (
       /* DEC  */ 8'h2?:             {action, Rwd} = {N, MEM___, Rrd - 16'd1};
       /* LDA  */ 8'h4?:             {action, Rwd} = {N, MEM_RD, Rrd + 16'd1};
       /* STR  */ 8'h5?:             {action, Rwd} = {N, MEM_WR, Rrd};
+      /* SEP  */ 8'hd?,
+      /* SEX  */ 8'he?,
       /* GLO  */ 8'h8?,
       /* GHI  */ 8'h9?:             {action, Rwd} = {N, MEM___, Rrd};
       /* PLO  */ 8'ha?:             {action, Rwd} = {N, MEM___, Rrd[15:8], D};
@@ -111,7 +113,6 @@ module cdp1802 (
       /* LDXA */ 8'h72,
       /* OUT  */ {4'h6, 4'b0???}:   {action, Rwd} = {X, MEM_RD, Rrd + 16'd1};
       /* INP  */ {4'h6, 4'b1???}:   {action, Rwd} = {X, MEM_WR, Rrd};
-      /* SEP SEX */ 8'hd?, 8'he?:   {action, Rwd} = {X, MEM___, Rrd};
 
       /* immediate and branch instructions must fetch from R[P] */
       8'h7c, 8'h7d, 8'h7f, 8'hf8, 8'hf9, 8'hfa, 8'hfb, 8'hfc, 8'hfd, 8'hff,
