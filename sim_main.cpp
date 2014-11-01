@@ -33,12 +33,12 @@ int main(int argc, char **argv)
     //   perror(argv[1]);
     //   exit(1);
     // }
-    // top->bus_in = getc(input);
+    // top->io_din = getc(input);
 
     FILE *log = fopen("log", "w");
     int t = 0;
     // for (i = 0; /*i < 534563551 */; i++) {
-    while (!top->bad) {
+    for (i = 0; !top->unsupported; i++) {
       top->clock = 1;
       top->eval();
       // tfp->dump(t);
@@ -48,14 +48,15 @@ int main(int argc, char **argv)
       top->eval();
       // tfp->dump(t);
       t += 20;
-      if (top->n & 1) {
-        putchar(top->bus_out);
-        putc(top->bus_out, log);
+      if (top->io_out && (top->io_n == 1)) {
+        putchar(top->io_dout);
+        putc(top->io_dout, log);
       }
-      if (top->n & 2) {
-        top->bus_in = getchar();
+      if (top->io_inp && (top->io_n == 2)) {
+        top->io_din = getchar();
       }
     }
+    printf("Simulation ended after %d cycles\n", i);
     delete top;
     // tfp->close();
     fclose(log);

@@ -5,16 +5,20 @@
 module cdp1802 (
   input               clock,
   input               resetq,
-  output reg          Q,
-  input      [3:0]    EF,
-  input      [7:0]    bus_in,
-  output     [2:0]    n,
-  output     [7:0]    bus_out,
 
-  output              bad,
+  output reg          Q,          // external pin Q
+  input      [3:0]    EF,         // external flags EF1 to EF4
 
-  output              ram_rd,     // read enable
-  output              ram_wr,     // write enable
+  input      [7:0]    io_din,     // IO data in
+  output     [7:0]    io_dout,    // IO data out
+  output     [2:0]    io_n,       // IO control lines: N2,N1,N0
+  output              io_inp,     // IO input signal
+  output              io_out,     // IO output signal
+
+  output              unsupported,// unsupported instruction signal
+
+  output              ram_rd,     // RAM read enable
+  output              ram_wr,     // RAM write enable
   output     [15:0]   ram_a,      // RAM address
   input      [7:0]    ram_q,      // RAM read data
   output     [7:0]    ram_d       // RAM write data
@@ -46,7 +50,7 @@ module cdp1802 (
   wire [3:0] I, N;
 
   // ---------- RAM hookups ------------------------------
-  assign ram_d = (I == 4'h6) ? bus_in : D;
+  assign ram_d = (I == 4'h6) ? io_din : D;
   assign ram_a = Rrd;             // RAM address always one of the 16-bit regs
 
   // ---------- conditional branch -----------------------
@@ -109,7 +113,9 @@ module cdp1802 (
       /* LDXA */ 8'h72,
       /* OUT  */ {4'h6, 4'b0???}:   {action, Rwd} = {X, MEM_RD, Rrd + 16'd1};
       /* INP  */ {4'h6, 4'b1???}:   {action, Rwd} = {X, MEM_WR, Rrd};
+      /* SEP SEX */ 8'hd?, 8'he?:   {action, Rwd} = {X, MEM___, Rrd};
 
+      /* immediate and branch instructions must fetch from R[P] */
       8'h7c, 8'h7d, 8'h7f, 8'hf8, 8'hf9, 8'hfa, 8'hfb, 8'hfc, 8'hfd, 8'hff,
       8'h3?, 8'hc?:                 {action, Rwd} = {P, MEM_RD, Rrd + 16'd1};
 
@@ -131,7 +137,7 @@ module cdp1802 (
     /* LDN  */ 8'h0?:               DFD_n = {DF, ram_q};
     /* GLO  */ 8'h8?:               DFD_n = {DF, Rrd[7:0]};
     /* GHI  */ 8'h9?:               DFD_n = {DF, Rrd[15:8]};
-    /* INP  */ 8'b0110_1???:        DFD_n = {DF, bus_in};
+    /* INP  */ 8'b0110_1???:        DFD_n = {DF, io_din};
     /* OR   */ 8'b1111_?001:        DFD_n = {DF, D | ram_q};
     /* AND  */ 8'b1111_?010:        DFD_n = {DF, D & ram_q};
     /* XOR  */ 8'b1111_?011:        DFD_n = {DF, D ^ ram_q};
@@ -143,10 +149,11 @@ module cdp1802 (
     default:                        DFD_n = {DF, D};
     endcase
 
-  assign n = ((I == 4'h6) &
-              (N[3] ? (state == EXECUTE) : (state == EXECUTE2))) ? N[2:0] : 3'b000;
-  assign bus_out = ram_q;
-  assign bad = {I, N} == 8'h70;
+  assign io_n = N[2:0];
+  assign io_out = (I == 4'h6) & ~N[3] & (state == EXECUTE2) & (N[2:0] != 3'b000);
+  assign io_inp = (I == 4'h6) & N[3] & (state == EXECUTE) & (N[2:0] != 3'b000);
+  assign io_dout = ram_q;
+  assign unsupported = {I, N} == 8'h70;
 
   // ---------- cycle commit -----------------------------
   always @(negedge resetq or posedge clock)

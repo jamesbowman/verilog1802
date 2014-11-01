@@ -3,10 +3,12 @@
 module testbench (
   input clock,
   output [7:0] cc,
-  output bad,
-  input [7:0] bus_in,
-  output [7:0] bus_out,
-  output [2:0] n
+  output unsupported,
+  input [7:0] io_din,
+  output io_inp,
+  output io_out,
+  output [7:0] io_dout,
+  output [2:0] io_n
 );
   // initial begin $display("Hello World"); $finish; end
 
@@ -34,7 +36,10 @@ module testbench (
     .resetq(1),
     .Q(Q),
     .EF(4'b0000),
-    .n(n),
+
+    .io_n(io_n),
+    .io_inp(io_inp),
+    .io_out(io_out),
 
     .ram_rd(ram_rd),
     .ram_wr(ram_wr),
@@ -42,10 +47,10 @@ module testbench (
     .ram_d(ram_d),
     .ram_a(ram_a),
 
-    .bus_in(bus_in),
-    .bus_out(bus_out),
+    .io_din(io_din),
+    .io_dout(io_dout),
 
-    .bad(bad)
+    .unsupported(unsupported)
     );
 
 endmodule
