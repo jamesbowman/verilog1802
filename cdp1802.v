@@ -41,7 +41,7 @@ module cdp1802 (
 
   reg [7:0] D;                    // data register (accumulator)
   reg DF;                         // data flag (ALU carry)
-  reg [7:0] bhi;                  // needed for hi-byte of long branch
+  reg [7:0] B;                    // used for hi-byte of long branch
   reg [7:0] ram_q_;               // registered copy of ram_q, for multi-cycle ops
   wire [3:0] I, N;
 
@@ -115,7 +115,7 @@ module cdp1802 (
 
       default:                      {action, Rwd} = {X, MEM_RD, Rrd};
       endcase
-    BRANCH3:                        {action, Rwd} = {P, MEM___, (I == 4'hc) ? bhi : Rrd[15:8], ram_q};
+    BRANCH3:                        {action, Rwd} = {P, MEM___, (I == 4'hc) ? B : Rrd[15:8], ram_q};
     default:                        {action, Rwd} = {X, MEM___, Rrd};
     endcase
 
@@ -164,6 +164,6 @@ module cdp1802 (
       if (((state == EXECUTE) & !ram_rd) || (state == EXECUTE2))
         {DF, D} <= DFD_n;
       if (state == BRANCH2)
-        bhi <= ram_q;
+        B <= ram_q;
     end
 endmodule
