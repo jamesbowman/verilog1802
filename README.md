@@ -4,7 +4,7 @@ verilog1802
 The RCA 1802 in Verilog
 
 If you have Verilator installed on your system then you should be able to run the 
-`CamelForth 1802 <http://www.camelforth.com/page.php?9>`_
+[CamelForth 1802](http://www.camelforth.com/page.php?9)
 system interactively:
 
     $ make
