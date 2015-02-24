@@ -10,7 +10,6 @@ module testbench (
   output [7:0] io_dout,
   output [2:0] io_n
 );
-  // initial begin $display("Hello World"); $finish; end
 
   reg [7:0] count;
   always @(posedge clock)
