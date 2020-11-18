@@ -28,16 +28,8 @@ int main(int argc, char **argv)
       top->v__DOT___ram__DOT__store[i] = v;
     }
 
-    // FILE *input = fopen(argv[1], "r");
-    // if (!input) {
-    //   perror(argv[1]);
-    //   exit(1);
-    // }
-    // top->io_din = getc(input);
-
     FILE *log = fopen("log", "w");
     int t = 0;
-    // for (i = 0; /*i < 534563551 */; i++) {
     for (i = 0; !top->unsupported; i++) {
       top->clock = 1;
       top->eval();
