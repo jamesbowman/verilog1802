@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include "Vtestbench.h"
 #include "verilated_vcd_c.h"
+// This include and the top->rootp syntax are proper for Verilator >= 4.210
+#include "Vtestbench___024root.h"
 
 int main(int argc, char **argv)
 {
@@ -25,7 +27,7 @@ int main(int argc, char **argv)
         fprintf(stderr, "invalid hex value at line %d\n", i + 1);
         exit(1);
       }
-      top->v__DOT___ram__DOT__store[i] = v;
+      top->rootp->v__DOT___ram__DOT__store[i] = v;
     }
 
     FILE *log = fopen("log", "w");

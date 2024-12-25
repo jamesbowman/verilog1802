@@ -92,7 +92,7 @@ module cdp1802 (
   localparam MEM_RD  = 2'b10;       // memory read strobe
   localparam MEM_WR  = 2'b01;       // memory write strobe
 
-  always @(state, I, N)
+  always @*
     case (state)
     FETCH, BRANCH2, SKIP:           {action, Rwd} = {P, MEM_RD, Rrd + 16'd1};
     EXECUTE, EXECUTE2:
