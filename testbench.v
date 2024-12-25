@@ -32,7 +32,7 @@ module testbench (
   wire Q;
   cdp1802 cdp1802 (
     .clock(clock),
-    .resetq(1),
+    .resetq(1'b1),
     .Q(Q),
     .EF(4'b0000),
 

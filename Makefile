@@ -11,3 +11,7 @@ obj_dir/Vtestbench: $(VERILOGS) sim_main.cpp Makefile
 	$(MAKE) -C obj_dir OPT_FAST="-O2" -f Vtestbench.mk Vtestbench
 
 .PHONY: all
+
+clean:
+	rm -rf obj_dir
+	rm -f log
